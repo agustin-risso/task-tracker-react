@@ -11,13 +11,23 @@ function Todo() {
 			? (lastId = 0)
 			: (lastId = todoList[todoList.length - 1].id);
 
-		setTodoList([...todoList, { id: lastId + 1, taskName: newTask }]);
+		setTodoList((prev) => [
+			...prev,
+			{ id: lastId + 1, taskName: newTask, isCompleted: false },
+		]);
 		setNewTask("");
 	}
 
 	function deleteTask(id) {
-		const filteredList = todoList.filter((task) => task.id !== id);
-		setTodoList(filteredList);
+		setTodoList((prev) => prev.filter((task) => task.id !== id));
+	}
+
+	function toggleChecked(id) {
+		setTodoList((prev) =>
+			prev.map((task) =>
+				task.id === id ? { ...task, isCompleted: !task.isCompleted } : task
+			)
+		);
 	}
 
 	return (
@@ -67,8 +77,19 @@ function Todo() {
 						}}
 						key={key}
 					>
-						<input type="checkbox"></input>
-						{task.taskName}
+						<input
+							type="checkbox"
+							checked={task.isCompleted}
+							onChange={() => toggleChecked(task.id)}
+						></input>
+						<p
+							style={{
+								textDecoration: task.isCompleted ? "line-through" : "none",
+								margin: "0",
+							}}
+						>
+							{task.taskName}
+						</p>
 						<button
 							style={{
 								color: "white",
