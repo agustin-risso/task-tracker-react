@@ -2,10 +2,16 @@ import { useState } from "react";
 
 function Todo() {
 	const [newTask, setNewTask] = useState("");
-	const [newList, setNewList] = useState([]);
+	const [todoList, setTodoList] = useState([]);
 
 	function addTask() {
-		setNewList([...newList, newTask]);
+		let lastId;
+
+		todoList.length === 0
+			? (lastId = 0)
+			: (lastId = todoList[todoList.length - 1].id);
+
+		setTodoList([...todoList, { id: lastId + 1, taskName: newTask }]);
 		setNewTask("");
 	}
 
@@ -19,15 +25,7 @@ function Todo() {
 			}}
 		>
 			<h2>To Do List</h2>
-			<form
-				style={{ display: "flex", gap: "15px" }}
-				onSubmit={(e) => {
-					e.preventDefault();
-					if (newTask.trim() !== "") {
-						addTask();
-					}
-				}}
-			>
+			<div style={{ display: "flex", gap: "15px" }}>
 				<input
 					type="text"
 					required
@@ -36,8 +34,10 @@ function Todo() {
 					placeholder="New Task..."
 					onChange={(e) => setNewTask(e.target.value)}
 				/>
-				<button type="submit">Add task</button>
-			</form>
+				<button onClick={addTask} disabled={!newTask}>
+					Add task
+				</button>
+			</div>
 			<ul
 				style={{
 					textAlign: "left",
@@ -47,16 +47,12 @@ function Todo() {
 					padding: "0",
 				}}
 			>
-				{newList.map((task, key) => {
-					return (
-						<div style={{ display: "flex", gap: "4px", textAlign: "left" }}>
-							<input type="checkbox"></input>
-							<li style={{ listStyle: "none" }} key={key}>
-								{task}
-							</li>
-						</div>
-					);
-				})}
+				{todoList.map((task, key) => (
+					<li style={{ listStyle: "none" }} key={key}>
+						<input type="checkbox"></input>
+						{task.taskName}
+					</li>
+				))}
 			</ul>
 		</div>
 	);
